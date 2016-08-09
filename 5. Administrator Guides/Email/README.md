@@ -27,3 +27,30 @@ rocketchat:
     - 3000:3000
 ```
 
+## Configuring in CentOS 7 
+If you're using CentOS 7, you can directly set your SMTP server settings at startup service:
+1 - Create startup service :
+```
+vi /usr/lib/systemd/system/rocketchat.service
+insert lines :
+[Unit]
+Description=The Rocket.Chat  server
+After=network.target remote-fs.target nss-lookup.target nginx.target mongod.target
+[Service]
+ExecStart=/bin/node /opt/Rocket.Chat/main.js
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=rocketchat
+User=root
+Group=root
+Environment=MONGO_URL=mongodb://localhost:27017/rocketchat ROOT_URL=http://your.server:3000/ PORT=3000 MAIL_URL=smtp://email@domain:password@smtp.server:port/
+[Install]
+WantedBy=multi-user.target
+
+2 - Start Rocket.Chat and set it to run on boot :
+systemctl enable rocketchat.service
+systemctl start rocketchat.service
+```
+
+
+
